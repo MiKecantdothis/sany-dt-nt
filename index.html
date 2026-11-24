@@ -1,0 +1,240 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Side Quest: Dec 3rd</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght@0,9..144,600;0,9..144,700;1,9..144,600&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap"
+    rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css" />
+</head>
+
+<body>
+  <!-- Fullscreen confetti canvas -->
+  <canvas id="confetti-canvas" aria-hidden="true"></canvas>
+
+  <!-- Subtle floating ambient background shapes -->
+  <div class="bg-orb bg-orb-1" aria-hidden="true"></div>
+  <div class="bg-orb bg-orb-2" aria-hidden="true"></div>
+
+  <main class="app-shell">
+    <!-- Top progress pill -->
+    <header class="top-bar">
+      <span class="quest-badge" id="stage-badge">QUEST BRIEFING • 01/03</span>
+      <span class="date-chip" id="target-date-chip">Dec 3 • 8:00 PM</span>
+    </header>
+
+    <!-- ====================================================== -->
+    <!-- PAGE 1: URGENT HOOK + COUNTDOWN                        -->
+    <!-- ====================================================== -->
+    <section id="page-1" class="screen screen--active" aria-labelledby="p1-heading">
+      <div class="card hero-card">
+        <div class="eyebrow-pill">⚠️ Time-Sensitive Dispatch</div>
+        <h1 id="p1-heading" class="display-title">
+          Hi <span data-recipient>Sanyukta</span>,<br />
+          you are running out of time.
+        </h1>
+        <p class="subtitle">
+          Before you panic — yes, there is a clock ticking down to
+          <strong>8:00 PM on December 3rd</strong>.
+        </p>
+
+        <!-- Shared Countdown Widget (moved/reused or mirrored on finale) -->
+        <div class="timer-box" data-timer-display>
+          <div class="timer-unit">
+            <span class="timer-num" data-days>00</span>
+            <span class="timer-label">Days</span>
+          </div>
+          <span class="timer-sep">:</span>
+          <div class="timer-unit">
+            <span class="timer-num" data-hours>00</span>
+            <span class="timer-label">Hrs</span>
+          </div>
+          <span class="timer-sep">:</span>
+          <div class="timer-unit">
+            <span class="timer-num" data-minutes>00</span>
+            <span class="timer-label">Min</span>
+          </div>
+          <span class="timer-sep">:</span>
+          <div class="timer-unit">
+            <span class="timer-num" data-seconds>00</span>
+            <span class="timer-label">Sec</span>
+          </div>
+        </div>
+
+        <button id="btn-start" class="btn btn-primary btn-lg" type="button">
+          Wait… what happens at 8 PM? <span aria-hidden="true">→</span>
+        </button>
+      </div>
+    </section>
+
+    <!-- ====================================================== -->
+    <!-- LOADING SCREEN                                         -->
+    <!-- ====================================================== -->
+    <section id="page-loading" class="screen" aria-live="polite">
+      <div class="card loading-card">
+        <div class="spinner-knit" aria-hidden="true">
+          <span>🧶</span>
+        </div>
+        <p class="loading-kicker">Decrypting mission parameters…</p>
+        <h2 class="loading-title">you might be getting asked out...</h2>
+        <div class="progress-track" aria-hidden="true">
+          <div class="progress-fill" id="loading-bar"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================================== -->
+    <!-- PAGE 2: COMPLIMENT + SELF-AWARE PUNCHLINE              -->
+    <!-- ====================================================== -->
+    <section id="page-2" class="screen" aria-labelledby="p2-heading">
+      <div class="card">
+        <div class="eyebrow-pill">💬 Honest Disclosure</div>
+        <h2 id="p2-heading" class="section-title">
+          Let’s just say, you’ve got really pretty eyes, and such a pretty smile
+          and and and might I say, you're sucha cutieeeeeeeee!!!
+        </h2>
+
+        <div class="beat-divider" aria-hidden="true">• • •</div>
+
+        <p class="punchline-text">
+          Pretty sure you’re either smiling right now… or completely grossed out.
+        </p>
+
+        <p id="p2-micro-reply" class="micro-reply" hidden></p>
+
+        <div class="reaction-row">
+          <button class="btn btn-primary" type="button" data-p2-reaction="smiling">
+            Okay, I’m smiling — keep going
+          </button>
+          <button class="btn btn-ghost" type="button" data-p2-reaction="grossed">
+            Mildly concerned, proceed anyway
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================================== -->
+    <!-- PAGE 3: SWEATER SIDE QUEST + 2 CARDS + CANCEL          -->
+    <!-- ====================================================== -->
+    <section id="page-3" class="screen" aria-labelledby="p3-heading">
+      <div class="card card--wide">
+        <div class="eyebrow-pill">🧥 Side Quest Unlocked</div>
+        <h2 id="p3-heading" class="section-title">
+          You’ve come this far, might as well cut to the chase.
+        </h2>
+        <p class="story-copy">
+          Can’t see you struggle without a sweater this December — in order to get it,
+          you have to complete a <strong>side quest</strong>.
+        </p>
+        <p class="story-instruction">
+          The clues are hidden in two places. <strong>Choose your sweater</strong> below
+          to reveal its secret location and vibe:
+        </p>
+
+        <!-- Two sweater cards -->
+        <div id="sweater-grid" class="sweater-grid">
+          <!-- Populated dynamically from config.js -->
+        </div>
+
+        <!-- Cancel side quest option -->
+        <div class="cancel-zone">
+          <button id="btn-cancel-quest" class="btn-cancel" type="button">
+            Cancel side quest entirely
+          </button>
+          <p class="cancel-subtext">Fine, I get it, you don't wanna go.</p>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================================== -->
+    <!-- FINALE: CONFETTI + CHOSEN QUEST + LIVE TIMER           -->
+    <!-- ====================================================== -->
+    <section id="page-finale" class="screen" aria-labelledby="finale-heading">
+      <div class="card finale-card">
+        <div class="eyebrow-pill eyebrow-pill--success">🎉 Quest Accepted</div>
+        <h2 id="finale-heading" class="display-title finale-title">
+          The quest awaits you in <span id="chosen-place-name" class="highlight-place"></span>
+        </h2>
+
+        <div class="chosen-recap">
+          <img id="chosen-sweater-img" src="" alt="Chosen sweater" class="chosen-thumb" />
+          <div class="chosen-recap-text">
+            <span class="recap-label" id="chosen-sweater-label"></span>
+            <p class="recap-vibe" id="chosen-place-vibe"></p>
+            <a id="chosen-place-link" class="place-link place-link--inline" href="#" target="_blank"
+              rel="noopener noreferrer" hidden>
+              Peek at the spot on Zomato ↗
+            </a>
+          </div>
+        </div>
+
+        <p class="timer-caption">Countdown still ticking to December 3rd, 8:00 PM:</p>
+        <div class="timer-box timer-box--compact" data-timer-display>
+          <div class="timer-unit">
+            <span class="timer-num" data-days>00</span>
+            <span class="timer-label">Days</span>
+          </div>
+          <span class="timer-sep">:</span>
+          <div class="timer-unit">
+            <span class="timer-num" data-hours>00</span>
+            <span class="timer-label">Hrs</span>
+          </div>
+          <span class="timer-sep">:</span>
+          <div class="timer-unit">
+            <span class="timer-num" data-minutes>00</span>
+            <span class="timer-label">Min</span>
+          </div>
+          <span class="timer-sep">:</span>
+          <div class="timer-unit">
+            <span class="timer-num" data-seconds>00</span>
+            <span class="timer-label">Sec</span>
+          </div>
+        </div>
+
+        <div class="finale-actions">
+          <button id="btn-send-receipt" class="btn btn-primary" type="button">
+            Copy Quest Receipt 📋
+          </button>
+          <button id="btn-switch-quest" class="btn btn-ghost btn-sm" type="button">
+            Wait, let me peek at the other sweater
+          </button>
+        </div>
+        <p id="notify-status" class="notify-status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <!-- ====================================================== -->
+    <!-- CANCELLED SCREEN                                       -->
+    <!-- ====================================================== -->
+    <section id="page-cancelled" class="screen" aria-labelledby="cancel-heading">
+      <div class="card cancel-card">
+        <div class="eyebrow-pill">🫠 Side Quest Aborted</div>
+        <h2 id="cancel-heading" class="section-title">
+          Side quest cancelled.
+        </h2>
+        <p class="punchline-text">
+          Fine, I get it, you don’t wanna go.
+        </p>
+        <p class="subtitle">
+          (Your December sweater privileges have been temporarily suspended. Unless you
+          changed your mind?)
+        </p>
+        <div class="reaction-row">
+          <button id="btn-reconsider" class="btn btn-primary" type="button">
+            Wait no, show me the sweaters again
+          </button>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script src="config.js"></script>
+  <script src="app.js"></script>
+</body>
+
+</html>
