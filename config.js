@@ -6,10 +6,9 @@
  */
 
 window.QUEST_CONFIG = {
-  // Recipient & deadline (local browser time: Dec 3, 2026 at 8:00 PM)
+  // Recipient name & initial top-right badge before she picks a date
   recipientName: "Sanyukta",
-  targetDateISO: "2026-12-03T20:00:00",
-  targetLabel: "December 3rd • 8:00 PM",
+  defaultDateChip: "DATE: TBD",
 
   // Replace assets/sweater-1.png and assets/sweater-2.png with your own PNGs,
   // or change the image paths and place details below.

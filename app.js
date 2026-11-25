@@ -14,12 +14,30 @@
     loading: document.getElementById("page-loading"),
     page2: document.getElementById("page-2"),
     page3: document.getElementById("page-3"),
+    loadout: document.getElementById("page-loadout"),
     finale: document.getElementById("page-finale"),
     cancelled: document.getElementById("page-cancelled")
   };
 
   let activeQuest = null;
+  let selectedWeapon = null;
+  let selectedDateISO = null;
+  let selectedDateLabel = cfg.defaultDateChip || "DATE: TBD";
+  let customNote = "";
   let confettiAnimId = null;
+  let timerIntervalId = null;
+
+  // Date/time inputs on Loadout screen
+  const questDateInput = document.getElementById("quest-date");
+  const questTimeInput = document.getElementById("quest-time");
+  const questMessageInput = document.getElementById("quest-message");
+  const dateError = document.getElementById("date-error");
+  const weaponError = document.getElementById("weapon-error");
+
+  // Leave date & time empty so she picks directly; prevent past dates
+  const today = new Date();
+  const todayLocal = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
+  questDateInput.min = todayLocal;
 
   // ------------------------------------------------------------
   // 1. INITIALIZE DYNAMIC LABELS
@@ -27,18 +45,17 @@
   document.querySelectorAll("[data-recipient]").forEach((el) => {
     el.textContent = cfg.recipientName;
   });
-  if (cfg.targetLabel) {
-    targetDateChip.textContent = cfg.targetLabel;
-  }
+  targetDateChip.textContent = selectedDateLabel;
 
   // ------------------------------------------------------------
   // 2. SCREEN NAVIGATION
   // ------------------------------------------------------------
   const badgeLabels = {
-    page1: "QUEST BRIEFING • 01/03",
+    page1: "QUEST BRIEFING • 01/04",
     loading: "DECRYPTING • ...",
-    page2: "QUEST BRIEFING • 02/03",
-    page3: "CHOOSE YOUR SWEATER • 03/03",
+    page2: "QUEST BRIEFING • 02/04",
+    page3: "CHOOSE YOUR SWEATER • 03/04",
+    loadout: "QUEST LOADOUT • 04/04",
     finale: "QUEST LOCKED IN ✨",
     cancelled: "QUEST ABORTED"
   };
@@ -51,14 +68,15 @@
   }
 
   // ------------------------------------------------------------
-  // 3. LIVE COUNTDOWN TIMER (ticks across Page 1 & Finale)
+  // 3. LIVE COUNTDOWN TIMER (starts once she locks in her date)
   // ------------------------------------------------------------
   function pad(n) {
     return String(Math.max(0, n)).padStart(2, "0");
   }
 
   function updateTimers() {
-    const targetMs = new Date(cfg.targetDateISO).getTime();
+    if (!selectedDateISO) return;
+    const targetMs = new Date(selectedDateISO).getTime();
     const diff = Math.max(0, targetMs - Date.now());
 
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
@@ -74,8 +92,11 @@
     });
   }
 
-  updateTimers();
-  setInterval(updateTimers, 1000);
+  function startCountdown() {
+    updateTimers();
+    if (timerIntervalId) clearInterval(timerIntervalId);
+    timerIntervalId = setInterval(updateTimers, 1000);
+  }
 
   // ------------------------------------------------------------
   // 4. PAGE 1 -> LOADING -> PAGE 2
@@ -177,20 +198,100 @@
   renderSweaterCards();
 
   // ------------------------------------------------------------
-  // 7. FINALE + NOTIFICATIONS + CONFETTI
+  // 7. VENUE PICKED -> LOADOUT -> FINALE + NOTIFICATIONS + CONFETTI
   // ------------------------------------------------------------
+  function formatDateLabel(dateStr, timeStr) {
+    if (!dateStr) return cfg.defaultDateChip || "DATE: TBD";
+    const dt = new Date(`${dateStr}T${timeStr || "20:00"}:00`);
+    if (Number.isNaN(dt.getTime())) return cfg.defaultDateChip || "DATE: TBD";
+    const dateFormatted = dt.toLocaleDateString("en-US", {
+      month: "short",
+      day: "numeric"
+    });
+    const timeFormatted = dt.toLocaleTimeString("en-US", {
+      hour: "numeric",
+      minute: "2-digit"
+    });
+    return `${dateFormatted} • ${timeFormatted}`;
+  }
+
   function selectQuestPath(quest) {
     activeQuest = quest;
-    document.getElementById("chosen-place-name").textContent = quest.placeName;
-    document.getElementById("chosen-sweater-img").src = quest.sweaterImage;
-    document.getElementById("chosen-sweater-img").alt = quest.sweaterLabel;
+    document.getElementById("loadout-place-name").textContent = quest.placeName;
+    dateError.hidden = true;
+    weaponError.hidden = true;
+    showScreen("loadout");
+  }
+
+  questDateInput.addEventListener("input", () => { dateError.hidden = true; });
+  questTimeInput.addEventListener("input", () => { dateError.hidden = true; });
+
+  // Weapon selection buttons (Tulips / Orchids)
+  document.querySelectorAll(".weapon-card").forEach((btn) => {
+    btn.addEventListener("click", () => {
+      selectedWeapon = btn.dataset.weapon;
+      weaponError.hidden = true;
+      document.querySelectorAll(".weapon-card").forEach((other) => {
+        const isSelected = other === btn;
+        other.classList.toggle("is-selected", isSelected);
+        other.setAttribute("aria-pressed", String(isSelected));
+      });
+    });
+  });
+
+  // Back to sweaters from Loadout
+  document.getElementById("btn-back-sweaters").addEventListener("click", () => {
+    showScreen("page3");
+  });
+
+  // Confirm Loadout -> Launch Finale
+  document.getElementById("btn-confirm-loadout").addEventListener("click", () => {
+    if (!activeQuest) return;
+
+    const pickedDate = questDateInput.value;
+    const pickedTime = questTimeInput.value;
+    const candidateMs = pickedDate && pickedTime ? new Date(`${pickedDate}T${pickedTime}:00`).getTime() : NaN;
+    if (!pickedDate || !pickedTime || Number.isNaN(candidateMs) || candidateMs <= Date.now()) {
+      dateError.hidden = false;
+      return;
+    }
+
+    if (!selectedWeapon) {
+      weaponError.hidden = false;
+      return;
+    }
+
+    selectedDateISO = `${pickedDate}T${pickedTime}:00`;
+    selectedDateLabel = formatDateLabel(pickedDate, pickedTime);
+    customNote = questMessageInput.value.trim();
+
+    // Update top chip & start the live countdown on Finale
+    targetDateChip.textContent = selectedDateLabel;
+    startCountdown();
+
+    document.getElementById("chosen-place-name").textContent = activeQuest.placeName;
+    document.getElementById("chosen-sweater-img").src = activeQuest.sweaterImage;
+    document.getElementById("chosen-sweater-img").alt = activeQuest.sweaterLabel;
     document.getElementById("chosen-sweater-label").textContent =
-      `${quest.sweaterLabel} • ${quest.sweaterTag}`;
-    document.getElementById("chosen-place-vibe").textContent = quest.vibeDescription;
+      `${activeQuest.sweaterLabel} • ${activeQuest.sweaterTag}`;
+    document.getElementById("chosen-place-vibe").textContent = activeQuest.vibeDescription;
+    document.getElementById("chosen-date-pill").textContent = `📅 ${selectedDateLabel}`;
+    document.getElementById("chosen-weapon-pill").textContent =
+      `${selectedWeapon === "Tulips" ? "🌷" : "🪻"} Weapon: ${selectedWeapon}`;
+    document.getElementById("finale-timer-caption").textContent =
+      `Countdown started for ${selectedDateLabel}:`;
+
+    const noteEl = document.getElementById("chosen-custom-note");
+    if (customNote) {
+      noteEl.textContent = `"${customNote}"`;
+      noteEl.hidden = false;
+    } else {
+      noteEl.hidden = true;
+    }
 
     const placeLink = document.getElementById("chosen-place-link");
-    if (quest.detailsUrl) {
-      placeLink.href = quest.detailsUrl;
+    if (activeQuest.detailsUrl) {
+      placeLink.href = activeQuest.detailsUrl;
       placeLink.hidden = false;
     } else {
       placeLink.hidden = true;
@@ -198,8 +299,8 @@
 
     showScreen("finale");
     launchConfetti();
-    sendSilentNotification("ACCEPTED", quest);
-  }
+    sendSilentNotification("ACCEPTED", activeQuest);
+  });
 
   // Cancel Side Quest flow
   document.getElementById("btn-cancel-quest").addEventListener("click", () => {
@@ -222,26 +323,39 @@
     const { web3formsAccessKey } = cfg.notifications || {};
     const summaryText =
       status === "ACCEPTED"
-        ? `${cfg.recipientName} ACCEPTED the side quest! Sweater: ${quest.sweaterLabel} | Place: ${quest.placeName}`
+        ? [
+          `${cfg.recipientName} ACCEPTED the side quest!`,
+          `Sweater: ${quest.sweaterLabel} (${quest.sweaterTag})`,
+          `Venue: ${quest.placeName}`,
+          `Date & Time: ${selectedDateLabel}`,
+          `Weapon of Choice: ${selectedWeapon}`,
+          `Custom Message: ${customNote || "(none)"}`
+        ].join("\n")
         : `${cfg.recipientName} clicked "Cancel side quest entirely".`;
 
     let sent = false;
 
     if (web3formsAccessKey) {
       try {
+        const formData = new FormData();
+        formData.append("access_key", web3formsAccessKey);
+        formData.append("subject", `Date Night Quest Update: ${status}`);
+        formData.append("from_name", "Date Night Side Quest");
+        formData.append("name", cfg.recipientName || "Guest");
+        formData.append("message", `${summaryText}\nTimestamp: ${new Date().toLocaleString()}`);
+
         const res = await fetch("https://api.web3forms.com/submit", {
           method: "POST",
-          headers: { "Content-Type": "application/json", Accept: "application/json" },
-          body: JSON.stringify({
-            access_key: web3formsAccessKey,
-            subject: `Date Night Quest Update: ${status}`,
-            from_name: "Date Night Side Quest",
-            message: `${summaryText}\nTimestamp: ${new Date().toLocaleString()}`
-          })
+          body: formData
         });
-        if (res.ok) sent = true;
-      } catch (_) {
-        // Fallback copy button remains available
+        const data = await res.json().catch(() => ({}));
+        if (res.ok && data.success) {
+          sent = true;
+        } else {
+          console.warn("Web3Forms response:", res.status, data);
+        }
+      } catch (err) {
+        console.warn("Web3Forms error:", err);
       }
     }
 
@@ -254,7 +368,15 @@
 
   document.getElementById("btn-send-receipt").addEventListener("click", async () => {
     if (!activeQuest) return;
-    const msg = `Quest accepted! 🧶✨\nSweater: ${activeQuest.sweaterLabel}\nDestination: ${activeQuest.placeName}\nSee you ${cfg.targetLabel}!`;
+    const lines = [
+      "Quest accepted! 🧶✨",
+      `Sweater: ${activeQuest.sweaterLabel}`,
+      `Destination: ${activeQuest.placeName}`,
+      `Date & Time: ${selectedDateLabel}`,
+      `Weapon of choice: ${selectedWeapon}`
+    ];
+    if (customNote) lines.push(`Note: "${customNote}"`);
+    const msg = lines.join("\n");
 
     try {
       await navigator.clipboard.writeText(msg);

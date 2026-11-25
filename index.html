@@ -4,7 +4,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Side Quest: Dec 3rd</title>
+  <title>Side Quest ✨</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link
@@ -24,12 +24,12 @@
   <main class="app-shell">
     <!-- Top progress pill -->
     <header class="top-bar">
-      <span class="quest-badge" id="stage-badge">QUEST BRIEFING • 01/03</span>
-      <span class="date-chip" id="target-date-chip">Dec 3 • 8:00 PM</span>
+      <span class="quest-badge" id="stage-badge">QUEST BRIEFING • 01/04</span>
+      <span class="date-chip" id="target-date-chip">DATE: TBD</span>
     </header>
 
     <!-- ====================================================== -->
-    <!-- PAGE 1: URGENT HOOK + COUNTDOWN                        -->
+    <!-- PAGE 1: URGENT HOOK + UNSTARTED CLOCK                  -->
     <!-- ====================================================== -->
     <section id="page-1" class="screen screen--active" aria-labelledby="p1-heading">
       <div class="card hero-card">
@@ -39,35 +39,35 @@
           you are running out of time.
         </h1>
         <p class="subtitle">
-          Before you panic — yes, there is a clock ticking down to
-          <strong>8:00 PM on December 3rd</strong>.
+          Okay, technically the clock hasn’t started yet —
+          <strong>you get to set the date &amp; time</strong> at the end.
         </p>
 
-        <!-- Shared Countdown Widget (moved/reused or mirrored on finale) -->
-        <div class="timer-box" data-timer-display>
+        <!-- Mystery unstarted clock (real countdown starts on Finale) -->
+        <div class="timer-box" aria-label="Countdown not started yet">
           <div class="timer-unit">
-            <span class="timer-num" data-days>00</span>
+            <span class="timer-num">--</span>
             <span class="timer-label">Days</span>
           </div>
           <span class="timer-sep">:</span>
           <div class="timer-unit">
-            <span class="timer-num" data-hours>00</span>
+            <span class="timer-num">--</span>
             <span class="timer-label">Hrs</span>
           </div>
           <span class="timer-sep">:</span>
           <div class="timer-unit">
-            <span class="timer-num" data-minutes>00</span>
+            <span class="timer-num">--</span>
             <span class="timer-label">Min</span>
           </div>
           <span class="timer-sep">:</span>
           <div class="timer-unit">
-            <span class="timer-num" data-seconds>00</span>
+            <span class="timer-num">--</span>
             <span class="timer-label">Sec</span>
           </div>
         </div>
 
         <button id="btn-start" class="btn btn-primary btn-lg" type="button">
-          Wait… what happens at 8 PM? <span aria-hidden="true">→</span>
+          Wait… what is this? <span aria-hidden="true">→</span>
         </button>
       </div>
     </section>
@@ -152,6 +152,80 @@
     </section>
 
     <!-- ====================================================== -->
+    <!-- PAGE 4: QUEST LOADOUT (DATE, WEAPON, CUSTOM MESSAGE)   -->
+    <!-- ====================================================== -->
+    <section id="page-loadout" class="screen" aria-labelledby="loadout-heading">
+      <div class="card">
+        <div class="eyebrow-pill">⚔️ Quest Loadout</div>
+        <h2 id="loadout-heading" class="section-title">
+          Alright, <span id="loadout-place-name" class="highlight-place"></span> it is.
+        </h2>
+        <p class="subtitle">
+          Lock in a few quick details before we start the confetti:
+        </p>
+
+        <div class="loadout-form">
+          <!-- 1. Date & Time Picker -->
+          <div class="field-group">
+            <label class="field-label" for="quest-date">📅 Pick the date &amp; time</label>
+            <div class="datetime-row">
+              <input id="quest-date" class="quest-input" type="date" required />
+              <input id="quest-time" class="quest-input" type="time" required />
+            </div>
+            <p class="field-hint">
+              Pick any day &amp; time that works for you — the countdown starts once you lock it in.
+            </p>
+            <p id="date-error" class="field-error" hidden>
+              Please pick a valid future date and time first!
+            </p>
+          </div>
+
+          <!-- 2. Weapon of Choice -->
+          <div class="field-group">
+            <span class="field-label">⚔️ Pick your weapon of choice</span>
+            <div class="weapon-grid" role="radiogroup" aria-label="Weapon of choice">
+              <button class="weapon-card" type="button" data-weapon="Tulips" aria-pressed="false">
+                <div class="weapon-img-wrap">
+                  <img class="weapon-img" src="assets/tulips.png" alt="Tulips" />
+                </div>
+                <span class="weapon-name">Tulips</span>
+                <span class="weapon-sub">Soft, classic &amp; undefeated</span>
+              </button>
+              <button class="weapon-card" type="button" data-weapon="Orchids" aria-pressed="false">
+                <div class="weapon-img-wrap">
+                  <img class="weapon-img" src="assets/orchids.png" alt="Orchids" />
+                </div>
+                <span class="weapon-name">Orchids</span>
+                <span class="weapon-sub">Bold, dramatic &amp; rare</span>
+              </button>
+            </div>
+            <p id="weapon-error" class="field-error" hidden>
+              Please pick your weapon of choice (Tulips or Orchids) first!
+            </p>
+          </div>
+
+          <!-- 3. Custom Message -->
+          <div class="field-group">
+            <label class="field-label" for="quest-message">
+              💌 Add any custom message you want
+            </label>
+            <textarea id="quest-message" class="quest-input quest-textarea" rows="3" maxlength="400"
+              placeholder="Any demands, dress-code notes, or trash talk..."></textarea>
+          </div>
+        </div>
+
+        <div class="finale-actions">
+          <button id="btn-confirm-loadout" class="btn btn-primary btn-lg" type="button">
+            Lock In Side Quest ✨
+          </button>
+          <button id="btn-back-sweaters" class="btn btn-ghost btn-sm" type="button">
+            ← Wait, let me look at the sweaters again
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ====================================================== -->
     <!-- FINALE: CONFETTI + CHOSEN QUEST + LIVE TIMER           -->
     <!-- ====================================================== -->
     <section id="page-finale" class="screen" aria-labelledby="finale-heading">
@@ -166,6 +240,11 @@
           <div class="chosen-recap-text">
             <span class="recap-label" id="chosen-sweater-label"></span>
             <p class="recap-vibe" id="chosen-place-vibe"></p>
+            <div class="recap-pills">
+              <span class="mini-pill" id="chosen-date-pill"></span>
+              <span class="mini-pill" id="chosen-weapon-pill"></span>
+            </div>
+            <p class="recap-note" id="chosen-custom-note" hidden></p>
             <a id="chosen-place-link" class="place-link place-link--inline" href="#" target="_blank"
               rel="noopener noreferrer" hidden>
               Peek at the spot on Zomato ↗
@@ -173,7 +252,9 @@
           </div>
         </div>
 
-        <p class="timer-caption">Countdown still ticking to December 3rd, 8:00 PM:</p>
+        <p class="timer-caption" id="finale-timer-caption">
+          Countdown started:
+        </p>
         <div class="timer-box timer-box--compact" data-timer-display>
           <div class="timer-unit">
             <span class="timer-num" data-days>00</span>

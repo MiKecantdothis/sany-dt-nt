@@ -123,6 +123,7 @@ body {
     opacity: 0;
     transform: translateY(14px) scale(0.985);
   }
+
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
@@ -334,8 +335,15 @@ body {
 }
 
 @keyframes wiggleSpin {
-  0%, 100% { transform: rotate(-12deg) scale(1); }
-  50% { transform: rotate(12deg) scale(1.08); }
+
+  0%,
+  100% {
+    transform: rotate(-12deg) scale(1);
+  }
+
+  50% {
+    transform: rotate(12deg) scale(1.08);
+  }
 }
 
 .loading-kicker {
@@ -563,8 +571,177 @@ body {
 }
 
 .place-link--inline {
-  margin-top: 8px;
+  margin-top: 10px;
   margin-bottom: 0;
+}
+
+/* Page 4: Quest Loadout (Date, Weapon, Message) */
+.loadout-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  text-align: left;
+  margin: 22px 0 26px;
+}
+
+.field-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.field-label {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--ink);
+}
+
+.datetime-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+}
+
+.quest-input {
+  width: 100%;
+  font-family: inherit;
+  font-size: 0.95rem;
+  color: var(--ink);
+  background: var(--surface-soft);
+  border: 1.5px solid var(--border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  color-scheme: dark;
+  transition: border-color 0.16s ease, box-shadow 0.16s ease;
+}
+
+.quest-input:focus {
+  outline: none;
+  border-color: var(--accent);
+  box-shadow: 0 0 0 3px var(--accent-soft);
+}
+
+.quest-textarea {
+  resize: vertical;
+  min-height: 86px;
+  line-height: 1.5;
+}
+
+.quest-textarea::placeholder {
+  color: #7c7187;
+}
+
+.field-hint {
+  margin: 0;
+  font-size: 0.78rem;
+  color: var(--ink-muted);
+}
+
+.field-error {
+  margin: 2px 0 0;
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #f29bb2;
+}
+
+.weapon-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.weapon-card {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 4px;
+  padding: 16px 12px;
+  border-radius: 16px;
+  background: var(--surface-soft);
+  border: 2px solid var(--border);
+  color: var(--ink);
+  font-family: inherit;
+  cursor: pointer;
+  transition: border-color 0.18s ease, transform 0.16s ease, background-color 0.18s ease, box-shadow 0.18s ease;
+}
+
+.weapon-card:hover {
+  border-color: #53446b;
+  transform: translateY(-2px);
+}
+
+.weapon-card.is-selected {
+  background: #1b1526;
+  border-color: var(--quest);
+  box-shadow: 0 10px 26px rgba(157, 121, 176, 0.24);
+}
+
+.weapon-img-wrap {
+  width: 100%;
+  height: 120px;
+  border-radius: 12px;
+  background: radial-gradient(circle at center, rgba(143, 111, 160, 0.16), rgba(7, 6, 9, 0.5));
+  border: 1px solid var(--border);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px;
+  margin-bottom: 6px;
+  overflow: hidden;
+}
+
+.weapon-img {
+  max-width: 85%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  object-fit: contain;
+  transition: transform 0.2s ease;
+}
+
+.weapon-card:hover .weapon-img,
+.weapon-card.is-selected .weapon-img {
+  transform: scale(1.06);
+}
+
+.weapon-name {
+  font-weight: 800;
+  font-size: 1rem;
+}
+
+.weapon-sub {
+  font-size: 0.78rem;
+  color: var(--ink-muted);
+}
+
+.recap-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.mini-pill {
+  font-size: 0.76rem;
+  font-weight: 700;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: rgba(157, 121, 176, 0.16);
+  color: var(--quest-text);
+  border: 1px solid rgba(157, 121, 176, 0.3);
+}
+
+.recap-note {
+  margin: 10px 0 0;
+  padding: 8px 12px;
+  border-radius: 10px;
+  background: rgba(7, 6, 9, 0.45);
+  border-left: 3px solid var(--accent);
+  font-size: 0.86rem;
+  font-style: italic;
+  color: var(--ink);
+  line-height: 1.45;
 }
 
 /* Cancel Zone */
@@ -666,6 +843,7 @@ body {
 }
 
 @media (max-width: 640px) {
+
   .card,
   .card--wide {
     padding: 26px 18px;
@@ -682,5 +860,14 @@ body {
   .chosen-recap {
     flex-direction: column;
     text-align: center;
+  }
+
+  .recap-pills {
+    justify-content: center;
+  }
+
+  .datetime-row,
+  .weapon-grid {
+    grid-template-columns: 1fr;
   }
 }
